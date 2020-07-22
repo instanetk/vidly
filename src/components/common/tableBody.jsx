@@ -12,7 +12,6 @@ class TableBody extends Component {
   };
   render() {
     const { data, columns } = this.props;
-    console.log(data);
 
     return (
       <tbody>

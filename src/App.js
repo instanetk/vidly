@@ -6,6 +6,7 @@ import Rentals from "./components/rentals";
 import Customers from "./components/customers";
 import NotFound from "./components/notFound";
 import MovieForm from "./components/common/movieForm";
+import LoginForm from "./components/loginForm";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/rentals" component={Rentals} />
           <Route path="/movies/:id" component={MovieForm} />
           <Route path="/movies" component={Movies} />
+          <Route path="/login" component={LoginForm} />
           <Route path="/not-found" component={NotFound} />
           <Redirect from="/" exact to="/movies" />
           <Redirect to="/not-found" />
