@@ -49,6 +49,12 @@ class Form extends Component {
     data[input.name] = input.value;
     this.setState({ data, errors });
   };
+
+  handleSelect = ({ currentTarget: input }) => {
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
+    this.setState({ data });
+  };
   renderButton(label) {
     return (
       <button disabled={this.validate()} className="btn btn-primary">
@@ -56,6 +62,28 @@ class Form extends Component {
       </button>
     );
   }
+
+  renderOption = (name, label, options) => {
+    return (
+      <div className="form-group">
+        <label htmlFor={name}>{label}</label>
+        <select
+          name={name}
+          onChange={this.handleChange}
+          className="custom-select"
+        >
+          {options.map((option) => {
+            return (
+              <option value={option} key={option}>
+                {option}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+    );
+  };
+
   renderInput(name, label, type = "text") {
     const { data, errors } = this.state;
 

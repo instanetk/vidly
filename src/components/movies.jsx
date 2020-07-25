@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import { Link, Route, Switch } from "react-router-dom";
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
+import MovieForm from "./common/movieForm";
 import _ from "lodash";
 
 class Movies extends Component {
@@ -41,6 +43,10 @@ class Movies extends Component {
   handleDelete = (movie) => {
     let movies = this.state.movies.filter((m) => m._id !== movie._id);
     this.setState({ movies });
+  };
+
+  handleAdd = (movie) => {
+    console.log(movie);
   };
 
   handlePageChange = (page) => {
@@ -94,6 +100,16 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
+          <Link to="/movies/new">
+            <button className="btn btn-primary">New Movie</button>
+          </Link>
+          <Switch>
+            <Route
+              path="/movies/new"
+              render={() => <MovieForm handleSave="saveMovie" />}
+            />
+          </Switch>
+
           <p className="font-weight-bold">
             Showing {totalCount} movies in the database
           </p>
