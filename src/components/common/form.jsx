@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Joi from "joi-browser";
 import Input from "./input";
+import Select from "./select";
 
 class Form extends Component {
   state = {
@@ -17,7 +18,7 @@ class Form extends Component {
     const errors = {};
 
     for (let item of error.details) errors[item.path[0]] = item.message;
-
+    console.log(errors);
     return errors;
   };
 
@@ -50,11 +51,11 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  handleSelect = ({ currentTarget: input }) => {
-    const data = { ...this.state.data };
-    data[input.name] = input.value;
-    this.setState({ data });
-  };
+  // handleSelect = ({ currentTarget: input }) => {
+  //   const data = { ...this.state.data };
+  //   data[input.name] = input.value;
+  //   this.setState({ data });
+  // };
   renderButton(label) {
     return (
       <button disabled={this.validate()} className="btn btn-primary">
@@ -63,24 +64,17 @@ class Form extends Component {
     );
   }
 
-  renderOption = (name, label, options) => {
+  renderSelect = (name, label, options, ...rest) => {
+    const { data, errors } = this.state;
     return (
-      <div className="form-group">
-        <label htmlFor={name}>{label}</label>
-        <select
-          name={name}
-          onChange={this.handleChange}
-          className="custom-select"
-        >
-          {options.map((option) => {
-            return (
-              <option value={option} key={option}>
-                {option}
-              </option>
-            );
-          })}
-        </select>
-      </div>
+      <Select
+        name={name}
+        value={data[name]}
+        label={label}
+        options={options}
+        onChange={this.handleChange}
+        error={errors[name]}
+      />
     );
   };
 

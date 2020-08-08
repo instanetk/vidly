@@ -1,31 +1,72 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./form";
+import { saveMovie, getMovie } from "../../services/movieService";
+import { getGenres } from "../../services/genreService";
 
 class MovieForm extends Form {
   state = {
-    data: { title: "", genre: "", stock: "", rate: "" },
+    data: {
+      title: "",
+      genreId: "",
+      numberInStock: "",
+      dailyRentalRate: "",
+    },
     errors: {},
+    genres: [],
   };
+
+  async populateGenre() {
+    const { data: genres } = await getGenres();
+    this.setState({ genres });
+  }
+
+  async populateMovie() {
+    try {
+      const movieId = this.props.match.params.id;
+      if (movieId === "new") return;
+
+      let { data: movie } = await getMovie(movieId);
+      this.setState({ data: this.mapToViewModel(movie) });
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        this.props.history.replace("/not-found");
+    }
+  }
+
+  async componentDidMount() {
+    await this.populateGenre();
+    await this.populateMovie();
+  }
+
+  mapToViewModel(movie) {
+    return {
+      _id: movie._id,
+      title: movie.title,
+      genreId: movie.genre._id,
+      numberInStock: movie.numberInStock,
+      dailyRentalRate: movie.dailyRentalRate,
+    };
+  }
 
   schema = {
+    _id: Joi.string(),
     title: Joi.string().required().label("Title"),
-    genre: Joi.string().label("Genre"),
-    stock: Joi.number().required().min(1).max(100).label("Stock"),
-    rate: Joi.number().required().min(1).max(10).label("Rate"),
+    genreId: Joi.string().label("Genre"),
+    numberInStock: Joi.number().required().min(0).max(100).label("Stock"),
+    dailyRentalRate: Joi.number().required().min(0).max(10).label("Rate"),
   };
 
-  doSubmit = () => {
+  doSubmit = async () => {
     const { history } = this.props;
 
     const movie = { ...this.state.data };
-    this.props.handleAdd(movie);
+    await saveMovie(movie);
 
     return history.push("/movies");
   };
 
   render() {
-    console.log(this.state.data, this.props);
     const id = () => {
       const { match } = this.props;
 
@@ -40,14 +81,9 @@ class MovieForm extends Form {
         <h1>Movie Form {id()}</h1>
         <form onSubmit={this.handleSubmit}>
           {this.renderInput("title", "Title")}
-          {this.renderOption("genre", "Genre", [
-            "",
-            "Action",
-            "Thriller",
-            "Comedy",
-          ])}
-          {this.renderInput("stock", "Number in Stock")}
-          {this.renderInput("rate", "Rate")}
+          {this.renderSelect("genreId", "Genre", this.state.genres)}
+          {this.renderInput("numberInStock", "Number in Stock")}
+          {this.renderInput("dailyRentalRate", "Rate")}
           {this.renderButton("Save")}
         </form>
       </React.Fragment>
